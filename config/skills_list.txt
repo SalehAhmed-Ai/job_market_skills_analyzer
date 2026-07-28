@@ -1,0 +1,20 @@
+Python
+SQL
+Excel
+Power Bi
+Tableau
+Pandas
+Numpy
+Machine Learning
+Git
+AWS
+Azure
+R
+Java
+SAS
+Spark
+Etl
+Statistics
+Powerpoint
+Word
+Outlook
