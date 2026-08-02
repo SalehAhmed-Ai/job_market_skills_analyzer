@@ -512,47 +512,7 @@ with tab_salary:
             
         st.markdown("---")
         
-        # 3. Salary Premium Calculation
-        st.markdown("### 💰 Skill Salary Premium (Median)")
-        st.markdown("Calculates the premium difference in **median annual salary** for job postings that *require* a technical skill versus those that *do not* (restricted to the top 10 most common skills).")
         
-        top_skills_premium = skill_totals.head(10).index.tolist()
-        premium_list = []
-        for skill in top_skills_premium:
-            with_skill_sal = salary_available[salary_available[skill] == 1]["salary_standardized"]
-            without_skill_sal = salary_available[salary_available[skill] == 0]["salary_standardized"]
-            if len(with_skill_sal) >= 3 and len(without_skill_sal) >= 3:
-                med_with = with_skill_sal.median()
-                med_without = without_skill_sal.median()
-                premium = med_with - med_without
-                premium_list.append({
-                    "Skill": skill.replace('_', ' '),
-                    "Median Salary (With)": med_with,
-                    "Median Salary (Without)": med_without,
-                    "Salary Premium ($)": premium,
-                    "Jobs With": len(with_skill_sal),
-                    "Jobs Without": len(without_skill_sal)
-                })
-                
-        if premium_list:
-            premium_df = pd.DataFrame(premium_list).sort_values(by="Salary Premium ($)", ascending=False)
-            
-            fig_prem = px.bar(
-                premium_df, x="Salary Premium ($)", y="Skill", orientation="h",
-                color="Salary Premium ($)",
-                color_continuous_scale="RdYlGn",
-                labels={"Salary Premium ($)": "Median Salary Difference ($)", "Skill": "Technical Skill"},
-                title="Salary Premium for In-Demand Technical Skills",
-                hover_data=["Median Salary (With)", "Median Salary (Without)", "Jobs With", "Jobs Without"]
-            )
-            fig_prem.update_layout(
-                margin=dict(l=10, r=10, t=40, b=10),
-                yaxis=dict(categoryorder="total ascending"),
-                title_font=dict(size=16, family="Inter, sans-serif")
-            )
-            st.plotly_chart(fig_prem, use_container_width=True)
-        else:
-            st.info("Insufficient salary data points in selection to compute skill salary premiums (at least 3 sample postings with and without the skill required are needed).")
 
 # ---------------------------------------------------------------------------
 # Tab 3: Requirements & Trends
@@ -603,7 +563,10 @@ with tab_requirements:
                 title="🎓 Distribution of Minimum Years of Experience Required"
             )
             fig_exp_dist.update_traces(
-                marker_color='#8b5cf6',
+                marker=dict(
+                color='#8b5cf6',
+                line=dict(color='white', width=1)
+                ),
                 opacity=0.85,
                 hovertemplate="Required Experience: %{x} yrs<br>Jobs count: %{y}<extra></extra>"
             )
@@ -710,19 +673,18 @@ with tab_explorer:
         ]
         st.dataframe(display_df, use_container_width=True, height=280)
         
-        # 2. Select Job to view details
+  # 2. Select Job to view details
         job_options = []
         for idx, row in explorer_df.iterrows():
-            job_options.append(f"{row['job_title']} at {row['company']} (ID: {row['index']})")
+            job_options.append(f"{row['job_title']} at {row['company']} (ID: {idx})")
             
         selected_option = st.selectbox(
             "👉 Select a job posting to inspect in detail:", 
             options=job_options
         )
-        
         if selected_option:
             selected_id = int(selected_option.split(" (ID: ")[-1][:-1])
-            selected_job = explorer_df[explorer_df["index"] == selected_id].iloc[0]
+            selected_job = explorer_df.loc[selected_id]
             
             st.markdown("---")
             st.markdown(f"### {selected_job['job_title']}")
