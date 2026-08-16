@@ -1,7 +1,9 @@
-Python
-Pandas
-Numpy
-Matplotlib
-Seaborn
-Plotly
-Streamlit
+python == 3.14.0
+pandas == 3.0.2
+numpy ==  2.3.5
+matplotlib == 3.7.0
+seaborn == 0.13.2
+streamlit == 1.60.0
+plotly == 6.0.0
+
+
